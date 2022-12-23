@@ -156,6 +156,23 @@ func TestStringArgValueBinder_WithIP(t *testing.T) {
 	}
 }
 
+func TestStringArgValueBinder_WithIPArray(t *testing.T) {
+	var target []net.IP
+	var input = "192.168.56.12,192.168.56.16"
+
+	rv := reflect.ValueOf(&target).Elem()
+	binder := StringArgsBinder(rv)
+	err := binder.Bind(input)
+	if err != nil {
+		t.Error(err)
+	}
+
+	expected := []net.IP{net.ParseIP("192.168.56.12"), net.ParseIP("192.168.56.16")}
+	if !reflect.DeepEqual(target, expected) {
+		t.Errorf("assert 'target':: expected '%#v', got '%#v'", expected, target)
+	}
+}
+
 func TestStringArgValueBinder_WithURL(t *testing.T) {
 	var target url.URL
 	var input = "http://localhost:80/path/"

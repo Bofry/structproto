@@ -8,6 +8,7 @@ import (
 
 const (
 	RequiredFlag = internal.RequiredFlag
+	BlankFlag    = internal.BlankFlag
 )
 
 type (

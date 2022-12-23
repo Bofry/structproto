@@ -16,6 +16,10 @@ var (
 
 type ScalarBinder reflect.Value
 
+func BuildScalarBinder(rv reflect.Value) internal.ValueBinder {
+	return ScalarBinder(rv)
+}
+
 func (binder ScalarBinder) Bind(v interface{}) error {
 	rv := reflect.Value(binder)
 	rv = reflect.Indirect(reflectutil.AssignZero(rv))
@@ -82,8 +86,4 @@ func (binder ScalarBinder) Bind(v interface{}) error {
 		return &ValueBindingError{v, rv.Kind().String(), err}
 	}
 	return err
-}
-
-func BuildScalarBinder(rv reflect.Value) internal.ValueBinder {
-	return ScalarBinder(rv)
 }

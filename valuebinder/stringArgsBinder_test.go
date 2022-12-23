@@ -1,6 +1,10 @@
 package valuebinder
 
 import (
+	"bytes"
+	"encoding/json"
+	"net"
+	"net/url"
 	"reflect"
 	"testing"
 	"time"
@@ -113,6 +117,77 @@ func TestStringArgValueBinder_WithRawContent(t *testing.T) {
 	}
 
 	expected := types.RawContent("binary content")
+	if !reflect.DeepEqual(target, expected) {
+		t.Errorf("assert 'target':: expected '%#v', got '%#v'", expected, target)
+	}
+}
+
+func TestStringArgValueBinder_WithRawMessage(t *testing.T) {
+	var target json.RawMessage
+	var input = "binary content"
+
+	rv := reflect.ValueOf(&target).Elem()
+	binder := StringArgsBinder(rv)
+	err := binder.Bind(input)
+	if err != nil {
+		t.Error(err)
+	}
+
+	expected := json.RawMessage("binary content")
+	if !reflect.DeepEqual(target, expected) {
+		t.Errorf("assert 'target':: expected '%#v', got '%#v'", expected, target)
+	}
+}
+
+func TestStringArgValueBinder_WithIP(t *testing.T) {
+	var target net.IP
+	var input = "192.168.56.12"
+
+	rv := reflect.ValueOf(&target).Elem()
+	binder := StringArgsBinder(rv)
+	err := binder.Bind(input)
+	if err != nil {
+		t.Error(err)
+	}
+
+	expected := net.ParseIP("192.168.56.12")
+	if !reflect.DeepEqual(target, expected) {
+		t.Errorf("assert 'target':: expected '%#v', got '%#v'", expected, target)
+	}
+}
+
+func TestStringArgValueBinder_WithURL(t *testing.T) {
+	var target url.URL
+	var input = "http://localhost:80/path/"
+
+	rv := reflect.ValueOf(&target).Elem()
+	binder := StringArgsBinder(rv)
+	err := binder.Bind(input)
+	if err != nil {
+		t.Error(err)
+	}
+
+	url, _ := url.Parse("http://localhost:80/path/")
+	expected := *url
+	if !reflect.DeepEqual(target, expected) {
+		t.Errorf("assert 'target':: expected '%#v', got '%#v'", expected, target)
+	}
+}
+
+func TestStringArgValueBinder_WithBuffer(t *testing.T) {
+	var target bytes.Buffer
+	var input = "The quick brown fox jumps over the lazy dog"
+
+	rv := reflect.ValueOf(&target).Elem()
+	binder := StringArgsBinder(rv)
+	err := binder.Bind(input)
+	if err != nil {
+		t.Error(err)
+	}
+
+	var buf bytes.Buffer
+	buf.WriteString("The quick brown fox jumps over the lazy dog")
+	expected := buf
 	if !reflect.DeepEqual(target, expected) {
 		t.Errorf("assert 'target':: expected '%#v', got '%#v'", expected, target)
 	}

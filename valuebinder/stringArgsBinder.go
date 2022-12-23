@@ -1,7 +1,10 @@
 package valuebinder
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"net"
 	"net/url"
 	"reflect"
 	"strconv"
@@ -20,16 +23,20 @@ var (
 
 type StringArgsBinder reflect.Value
 
+func BuildStringArgsBinder(rv reflect.Value) internal.ValueBinder {
+	return StringArgsBinder(rv)
+}
+
 func (binder StringArgsBinder) Bind(input interface{}) error {
 	v, ok := input.(string)
 	if !ok {
 		return fmt.Errorf("cannot bind type %T from input", input)
 	}
 	rv := reflect.Value(binder)
-	return binder.bindStringValueImpl(rv, v)
+	return binder.bindValueImpl(rv, v)
 }
 
-func (binder StringArgsBinder) bindStringValueImpl(rv reflect.Value, v string) error {
+func (binder StringArgsBinder) bindValueImpl(rv reflect.Value, v string) error {
 	rv = reflect.Indirect(reflectutil.AssignZero(rv))
 	var err error
 
@@ -48,6 +55,13 @@ func (binder StringArgsBinder) bindStringValueImpl(rv reflect.Value, v string) e
 				return &ValueBindingError{v, rv.Type().String(), err}
 			}
 			rv.Set(reflect.ValueOf(time))
+		case typeOfBuffer:
+			var buf bytes.Buffer
+			_, err := buf.WriteString(v)
+			if err != nil {
+				return &ValueBindingError{v, rv.Type().String(), err}
+			}
+			rv.Set(reflect.ValueOf(buf))
 		default:
 			return &ValueBindingError{v, rv.Type().String(), err}
 		}
@@ -56,13 +70,19 @@ func (binder StringArgsBinder) bindStringValueImpl(rv reflect.Value, v string) e
 		case typeOfRawContent:
 			buf := []byte(v)
 			rv.Set(reflect.ValueOf(types.RawContent(buf)))
+		case typeOfRawMessage:
+			buf := []byte(v)
+			rv.Set(reflect.ValueOf(json.RawMessage(buf)))
+		case typeOfIP:
+			ip := net.ParseIP(v)
+			rv.Set(reflect.ValueOf(ip))
 		default:
 			if len(v) > 0 {
 				array := strings.Split(v, ",")
 				size := len(array)
 				container := reflect.MakeSlice(rv.Type(), size, size)
 				for i, elem := range array {
-					err := binder.bindStringValueImpl(container.Index(i), elem)
+					err := binder.bindValueImpl(container.Index(i), elem)
 					if err != nil {
 						return err
 					}
@@ -109,8 +129,4 @@ func (binder StringArgsBinder) bindStringValueImpl(rv reflect.Value, v string) e
 		return &ValueBindingError{v, rv.Kind().String(), err}
 	}
 	return err
-}
-
-func BuildStringArgsBinder(rv reflect.Value) internal.ValueBinder {
-	return StringArgsBinder(rv)
 }

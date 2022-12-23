@@ -4,6 +4,7 @@ import "reflect"
 
 const (
 	RequiredFlag = "required"
+	BlankFlag    = "_"
 )
 
 type (

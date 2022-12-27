@@ -42,17 +42,17 @@ func main() {
   if err != nil {
     panic(err)
   }
-  fmt.Printf("Name      : %q\n", model.Name)
-  fmt.Printf("Age       : %d\n", *model.Age)
-  fmt.Printf("Alias     : %q\n", model.Alias)
+  fmt.Printf("Name       : %q\n", model.Name)
+  fmt.Printf("Age        : %d\n", *model.Age)
+  fmt.Printf("Alias      : %q\n", model.Alias)
   fmt.Printf("DateOfBirth: %q\n", model.DateOfBirth)
-  fmt.Printf("Remark    : %q\n", model.Remark)
+  fmt.Printf("Remark     : %q\n", model.Remark)
   // Output:
-  // Name      : "luffy"
-  // Age       : 19
-  // Alias     : ["lucy"]
+  // Name       : "luffy"
+  // Age        : 19
+  // Alias      : ["lucy"]
   // DateOfBirth: "2020-05-05 00:00:00 +0000 UTC"
-  // Remark    : ""
+  // Remark     : ""
 }
 ```
 
@@ -94,17 +94,17 @@ func main() {
   if err != nil {
     panic(err)
   }
-  fmt.Printf("Name      : %q\n", model.Name)
-  fmt.Printf("Age       : %d\n", *model.Age)
-  fmt.Printf("Alias     : %q\n", model.Alias)
+  fmt.Printf("Name       : %q\n", model.Name)
+  fmt.Printf("Age        : %d\n", *model.Age)
+  fmt.Printf("Alias      : %q\n", model.Alias)
   fmt.Printf("DateOfBirth: %q\n", model.DateOfBirth)
-  fmt.Printf("Remark    : %q\n", model.Remark)
+  fmt.Printf("Remark     : %q\n", model.Remark)
   // Output:
-  // Name      : "luffy"
-  // Age       : 19
-  // Alias     : ["lucy"]
+  // Name       : "luffy"
+  // Age        : 19
+  // Alias      : ["lucy"]
   // DateOfBirth: "2020-05-05 00:00:00 +0000 UTC"
-  // Remark    : ""
+  // Remark     : ""
 }
 ```
 
@@ -151,17 +151,17 @@ func main() {
   if err != nil {
     panic(err)
   }
-  fmt.Printf("Name      : %q\n", model.Name)
-  fmt.Printf("Age       : %d\n", *model.Age)
-  fmt.Printf("Alias     : %q\n", model.Alias)
+  fmt.Printf("Name       : %q\n", model.Name)
+  fmt.Printf("Age        : %d\n", *model.Age)
+  fmt.Printf("Alias      : %q\n", model.Alias)
   fmt.Printf("DateOfBirth: %q\n", model.DateOfBirth)
-  fmt.Printf("Remark    : %q\n", model.Remark)
+  fmt.Printf("Remark     : %q\n", model.Remark)
   // Output:
-  // Name      : "luffy"
-  // Age       : 19
-  // Alias     : ["lucy"]
+  // Name       : "luffy"
+  // Age        : 19
+  // Alias      : ["lucy"]
   // DateOfBirth: "2020-05-05 00:00:00 +0000 UTC"
-  // Remark    : ""
+  // Remark     : ""
 }
 ```
 
@@ -212,17 +212,17 @@ func main() {
   if err != nil {
     panic(err)
   }
-  fmt.Printf("Name      : %q\n", model.Name)
-  fmt.Printf("Age       : %d\n", *model.Age)
-  fmt.Printf("Alias     : %q\n", model.Alias)
+  fmt.Printf("Name       : %q\n", model.Name)
+  fmt.Printf("Age        : %d\n", *model.Age)
+  fmt.Printf("Alias      : %q\n", model.Alias)
   fmt.Printf("DateOfBirth: %q\n", model.DateOfBirth)
-  fmt.Printf("Remark    : %q\n", model.Remark)
+  fmt.Printf("Remark     : %q\n", model.Remark)
   // Output:
-  // Name      : "luffy"
-  // Age       : 19
-  // Alias     : ["lucy"]
+  // Name       : "luffy"
+  // Age        : 19
+  // Alias      : ["lucy"]
   // DateOfBirth: "2020-05-05 00:00:00 +0000 UTC"
-  // Remark    : ""
+  // Remark     : ""
 }
 ```
 
@@ -283,17 +283,17 @@ func main() {
   if err != nil {
     panic(err)
   }
-  fmt.Printf("Name      : %q\n", model.Name)
-  fmt.Printf("Age       : %d\n", *model.Age)
-  fmt.Printf("Alias     : %q\n", model.Alias)
+  fmt.Printf("Name       : %q\n", model.Name)
+  fmt.Printf("Age        : %d\n", *model.Age)
+  fmt.Printf("Alias      : %q\n", model.Alias)
   fmt.Printf("DateOfBirth: %q\n", model.DateOfBirth)
-  fmt.Printf("Remark    : %q\n", model.Remark)
+  fmt.Printf("Remark     : %q\n", model.Remark)
   // Output:
-  // Name      : "luffy"
-  // Age       : 19
-  // Alias     : ["lucy"]
+  // Name       : "luffy"
+  // Age        : 19
+  // Alias      : ["lucy"]
   // DateOfBirth: "2020-05-05 00:00:00 +0000 UTC"
-  // Remark    : ""
+  // Remark     : ""
 }
 ```
 
@@ -360,17 +360,17 @@ func main() {
   if err != nil {
     panic(err)
   }
-  fmt.Printf("Name      : %q\n", model.Name)
-  fmt.Printf("Age       : %d\n", *model.Age)
-  fmt.Printf("Alias     : %q\n", model.Alias)
+  fmt.Printf("Name       : %q\n", model.Name)
+  fmt.Printf("Age        : %d\n", *model.Age)
+  fmt.Printf("Alias      : %q\n", model.Alias)
   fmt.Printf("DateOfBirth: %q\n", model.DateOfBirth)
-  fmt.Printf("Remark    : %q\n", model.Remark)
+  fmt.Printf("Remark     : %q\n", model.Remark)
   // Output:
-  // Name      : "luffy"
-  // Age       : 19
-  // Alias     : ["lucy"]
+  // Name       : "luffy"
+  // Age        : 19
+  // Alias      : ["lucy"]
   // DateOfBirth: "2020-05-05 00:00:00 +0000 UTC"
-  // Remark    : ""
+  // Remark     : ""
 }
 ```
 

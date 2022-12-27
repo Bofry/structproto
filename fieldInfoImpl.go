@@ -29,8 +29,12 @@ func (f *FieldInfoImpl) Index() int {
 	return f.index
 }
 
-func (f *FieldInfoImpl) HasFlag(predicate func(v string) bool) bool {
+func (f *FieldInfoImpl) FindFlag(predicate func(v string) bool) bool {
 	return f.flags.find(predicate)
+}
+
+func (f *FieldInfoImpl) HasFlag(v string) bool {
+	return f.flags.has(v)
 }
 
 func (f *FieldInfoImpl) Tag() reflect.StructTag {

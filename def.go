@@ -31,7 +31,8 @@ type (
 		Name() string
 		Desc() string
 		Index() int
-		HasFlag(predicate func(v string) bool) bool
+		FindFlag(predicate func(v string) bool) bool
+		HasFlag(v string) bool
 		Tag() reflect.StructTag
 	}
 

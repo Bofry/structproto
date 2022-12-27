@@ -35,7 +35,7 @@ func (ctx *StructProtoContext) RequiredFields() []string {
 func (ctx *StructProtoContext) IsRequired(name string) bool {
 	field := ctx.getFieldInfoImpl(name)
 	if field != nil {
-		return field.flags.has(RequiredFlag)
+		return field.HasFlag(RequiredFlag)
 	}
 	return false
 }

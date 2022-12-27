@@ -83,6 +83,8 @@ func TestStructBindIterator_WithFieldValueMap(t *testing.T) {
 	}
 }
 
+var _ structproto.Iterator = EntitySet(nil)
+
 type EntitySet [][2]string
 
 func (set EntitySet) Iterate() <-chan structproto.FieldValueEntity {

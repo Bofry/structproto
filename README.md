@@ -245,7 +245,7 @@ type Character struct {
   Remark      string    `demo:"REMARK;note the character's personal favor"`
 }
 
-var _ Iterator = EntitySet(nil)
+var _ structproto.Iterator = EntitySet(nil)
 
 type EntitySet [][]string
 

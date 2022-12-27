@@ -52,8 +52,8 @@ func TestStructProtoContext(t *testing.T) {
 			t.Errorf("assert 'FieldInfo.Index()':: expected '%#v', got '%#v'", expectedIndex, field.Index())
 		}
 		expectedFlags := []string{"required"}
-		if !reflect.DeepEqual(expectedFlags, field.flags.ToArray()) {
-			t.Errorf("assert 'FieldInfo.Flags()':: expected '%#v', got '%#v'", expectedFlags, field.flags.ToArray())
+		if !reflect.DeepEqual(expectedFlags, field.flags.toArray()) {
+			t.Errorf("assert 'FieldInfo.Flags()':: expected '%#v', got '%#v'", expectedFlags, field.flags.toArray())
 		}
 	}
 

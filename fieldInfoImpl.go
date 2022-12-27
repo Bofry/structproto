@@ -30,7 +30,7 @@ func (f *FieldInfoImpl) Index() int {
 }
 
 func (f *FieldInfoImpl) HasFlag(predicate func(v string) bool) bool {
-	return f.flags.Find(predicate)
+	return f.flags.find(predicate)
 }
 
 func (f *FieldInfoImpl) Tag() reflect.StructTag {
@@ -43,7 +43,7 @@ func (f *FieldInfoImpl) appendFlags(values ...string) {
 			if len(v) == 0 {
 				continue
 			}
-			f.flags.Append(v)
+			f.flags.append(v)
 		}
 	}
 }

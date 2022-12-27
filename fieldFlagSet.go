@@ -11,7 +11,7 @@ var (
 
 type FieldFlagSet []string
 
-func (s *FieldFlagSet) Append(values ...string) {
+func (s *FieldFlagSet) append(values ...string) {
 	set := *s
 	if len(values) > 0 {
 		for _, v := range values {
@@ -36,7 +36,7 @@ func (s *FieldFlagSet) Append(values ...string) {
 	}
 }
 
-func (s *FieldFlagSet) Clone() *FieldFlagSet {
+func (s *FieldFlagSet) clone() *FieldFlagSet {
 	set := *s
 	if !reflect.ValueOf(set).IsZero() {
 		var container = make([]string, len(set))
@@ -47,8 +47,8 @@ func (s *FieldFlagSet) Clone() *FieldFlagSet {
 	return &emptyFieldFlagSet
 }
 
-func (s *FieldFlagSet) Get(index int) (string, bool) {
-	if !s.IsEmpty() {
+func (s *FieldFlagSet) get(index int) (string, bool) {
+	if !s.isEmpty() {
 		set := *s
 		if index >= 0 && index < len(set) {
 			return set[index], true
@@ -57,8 +57,8 @@ func (s *FieldFlagSet) Get(index int) (string, bool) {
 	return "", false
 }
 
-func (s *FieldFlagSet) Find(predicate func(v string) bool) bool {
-	if s.IsEmpty() {
+func (s *FieldFlagSet) find(predicate func(v string) bool) bool {
+	if s.isEmpty() {
 		return false
 	}
 
@@ -72,16 +72,16 @@ func (s *FieldFlagSet) Find(predicate func(v string) bool) bool {
 	return false
 }
 
-func (s *FieldFlagSet) Has(v string) bool {
-	if s.IsEmpty() {
+func (s *FieldFlagSet) has(v string) bool {
+	if s.isEmpty() {
 		return false
 	}
 
-	return -1 != s.IndexOf(v)
+	return -1 != s.indexOf(v)
 }
 
-func (s *FieldFlagSet) IndexOf(v string) int {
-	if !s.IsEmpty() {
+func (s *FieldFlagSet) indexOf(v string) int {
+	if !s.isEmpty() {
 		set := *s
 		if len(set) > 0 {
 			i := sort.SearchStrings(set, v)
@@ -95,24 +95,24 @@ func (s *FieldFlagSet) IndexOf(v string) int {
 	return -1
 }
 
-func (s *FieldFlagSet) IsEmpty() bool {
+func (s *FieldFlagSet) isEmpty() bool {
 	return len(*s) == 0
 }
 
-func (s *FieldFlagSet) ToArray() []string {
+func (s *FieldFlagSet) toArray() []string {
 	return *s
 }
 
-func (s *FieldFlagSet) Len() int {
-	if s.IsEmpty() {
+func (s *FieldFlagSet) len() int {
+	if s.isEmpty() {
 		return 0
 	}
 
 	return len(*s)
 }
 
-func (s FieldFlagSet) Iterate() <-chan string {
-	if !s.IsEmpty() {
+func (s FieldFlagSet) iterate() <-chan string {
+	if !s.isEmpty() {
 		c := make(chan string, 1)
 		go func() {
 			for _, v := range s {
@@ -125,17 +125,17 @@ func (s FieldFlagSet) Iterate() <-chan string {
 	return nil
 }
 
-func (s *FieldFlagSet) Remove(v string) bool {
-	if !s.IsEmpty() {
-		index := s.IndexOf(v)
-		deleted, _ := s.RemoveIndex(index)
+func (s *FieldFlagSet) remove(v string) bool {
+	if !s.isEmpty() {
+		index := s.indexOf(v)
+		deleted, _ := s.removeIndex(index)
 		return deleted
 	}
 	return false
 }
 
-func (s *FieldFlagSet) RemoveIndex(index int) (bool, string) {
-	if !s.IsEmpty() {
+func (s *FieldFlagSet) removeIndex(index int) (bool, string) {
+	if !s.isEmpty() {
 		set := *s
 		if index >= 0 && index < len(set) {
 			value := set[index]

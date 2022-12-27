@@ -10,19 +10,19 @@ func TestFieldFlagSet_WithEmptySet(t *testing.T) {
 
 	// test IsEmpty()
 	{
-		if set.IsEmpty() != true {
-			t.Errorf("assert 'IsEmpty()':: expected '%+v', got '%+v'", true, set.IsEmpty())
+		if set.isEmpty() != true {
+			t.Errorf("assert 'IsEmpty()':: expected '%+v', got '%+v'", true, set.isEmpty())
 		}
 	}
 	// test Len
 	{
-		if set.Len() != 0 {
-			t.Errorf("assert 'Len()':: expected '%+v', got '%+v'", 0, set.Len())
+		if set.len() != 0 {
+			t.Errorf("assert 'Len()':: expected '%+v', got '%+v'", 0, set.len())
 		}
 	}
 	// test Get
 	{
-		v, found := set.Get(0)
+		v, found := set.get(0)
 		if found != false {
 			t.Errorf("assert found of 'Get(0)':: expected '%+v', got '%+v'", false, found)
 		}
@@ -32,28 +32,28 @@ func TestFieldFlagSet_WithEmptySet(t *testing.T) {
 	}
 	// test IndexOf
 	{
-		index := set.IndexOf("unknown")
+		index := set.indexOf("unknown")
 		if index != -1 {
 			t.Errorf("assert 'IndexOf()':: expected '%+v', got '%+v'", -1, index)
 		}
 	}
 	// test Has
 	{
-		existed := set.Has("unknown")
+		existed := set.has("unknown")
 		if existed != false {
 			t.Errorf("assert 'Has()':: expected '%+v', got '%+v'", false, existed)
 		}
 	}
 	// test Clone
 	{
-		Cloned := set.Clone()
+		Cloned := set.clone()
 		if !reflect.DeepEqual(*Cloned, set) {
 			t.Errorf("assert 'Clone()':: expected '%#v', got '%#v'", set, *Cloned)
 		}
 	}
 	// test Append
 	{
-		set.Append("bob", "alice")
+		set.append("bob", "alice")
 		expected := []string{"alice", "bob"}
 		if !reflect.DeepEqual(expected, []string(set)) {
 			t.Errorf("assert 'Append()':: expected '%#v', got '%#v'", expected, []string(set))
@@ -66,19 +66,19 @@ func TestFieldFlagSet_WithSampleSet(t *testing.T) {
 
 	// test IsEmpty()
 	{
-		if set.IsEmpty() != false {
-			t.Errorf("assert 'IsEmpty()':: expected '%+v', got '%+v'", false, set.IsEmpty())
+		if set.isEmpty() != false {
+			t.Errorf("assert 'IsEmpty()':: expected '%+v', got '%+v'", false, set.isEmpty())
 		}
 	}
 	// test count
 	{
-		if set.Len() != 2 {
-			t.Errorf("assert 'Len()':: expected '%+v', got '%+v'", 2, set.Len())
+		if set.len() != 2 {
+			t.Errorf("assert 'Len()':: expected '%+v', got '%+v'", 2, set.len())
 		}
 	}
 	// test Get
 	{
-		v, found := set.Get(0)
+		v, found := set.get(0)
 		if found != true {
 			t.Errorf("assert found of 'Get(0)':: expected '%+v', got '%+v'", true, found)
 		}
@@ -88,28 +88,28 @@ func TestFieldFlagSet_WithSampleSet(t *testing.T) {
 	}
 	// test indexOf
 	{
-		index := set.IndexOf("georgy")
+		index := set.indexOf("georgy")
 		if index != 1 {
 			t.Errorf("assert 'IndexOf()':: expected '%+v', got '%+v'", 1, index)
 		}
 	}
 	// test contains
 	{
-		existed := set.Has("bob")
+		existed := set.has("bob")
 		if existed != true {
 			t.Errorf("assert 'Has()':: expected '%+v', got '%+v'", true, existed)
 		}
 	}
 	// test Clone
 	{
-		Cloned := set.Clone()
+		Cloned := set.clone()
 		if !reflect.DeepEqual(*Cloned, set) {
 			t.Errorf("assert 'Clone()':: expected '%#v', got '%#v'", set, *Cloned)
 		}
 	}
 	// test Append
 	{
-		set.Append("bob", "alice")
+		set.append("bob", "alice")
 		expected := []string{"alice", "bob", "georgy"}
 		if !reflect.DeepEqual(expected, []string(set)) {
 			t.Errorf("assert 'Append()':: expected '%#v', got '%#v'", expected, []string(set))
@@ -117,7 +117,7 @@ func TestFieldFlagSet_WithSampleSet(t *testing.T) {
 	}
 	// test RemoveIndex
 	{
-		found, value := set.RemoveIndex(8)
+		found, value := set.removeIndex(8)
 		if found != false {
 			t.Errorf("assert found of 'RemoveIndex()':: expected '%#v', got '%#v'", false, found)
 		}
@@ -131,7 +131,7 @@ func TestFieldFlagSet_WithSampleSet(t *testing.T) {
 	}
 	// test RemoveIndex
 	{
-		found, value := set.RemoveIndex(2)
+		found, value := set.removeIndex(2)
 		if found != true {
 			t.Errorf("assert found of 'RemoveIndex()':: expected '%#v', got '%#v'", true, found)
 		}

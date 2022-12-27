@@ -35,32 +35,32 @@ func (ctx *StructProtoContext) RequiredFields() []string {
 func (ctx *StructProtoContext) IsRequired(name string) bool {
 	field := ctx.getFieldInfoImpl(name)
 	if field != nil {
-		return field.flags.Has(RequiredFlag)
+		return field.flags.has(RequiredFlag)
 	}
 	return false
 }
 
 func (ctx *StructProtoContext) CheckIfMissingRequiredFields(visitFieldProc func() <-chan string) error {
-	if ctx.requiredFields.IsEmpty() {
+	if ctx.requiredFields.isEmpty() {
 		return nil
 	}
 
-	var requiredFields = ctx.requiredFields.Clone()
+	var requiredFields = ctx.requiredFields.clone()
 
 	for field := range visitFieldProc() {
-		index := requiredFields.IndexOf(field)
+		index := requiredFields.indexOf(field)
 		if index != -1 {
-			requiredFields.RemoveIndex(index)
+			requiredFields.removeIndex(index)
 		}
 
 		// break loop if no more required fields
-		if requiredFields.IsEmpty() {
+		if requiredFields.isEmpty() {
 			return nil
 		}
 	}
 
-	if !requiredFields.IsEmpty() {
-		field, _ := requiredFields.Get(0)
+	if !requiredFields.isEmpty() {
+		field, _ := requiredFields.get(0)
 		return &MissingRequiredFieldError{field, nil}
 	}
 	return nil

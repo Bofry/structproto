@@ -68,7 +68,7 @@ func (s *Struct) BindFields(values []FieldValueEntity, buildValueBinder ValueBin
 	if buildValueBinder == nil {
 		return fmt.Errorf("missing ValueBinderProvider")
 	}
-	var requiredFields = s.requiredFields.Clone()
+	var requiredFields = s.requiredFields.clone()
 
 	// mapping values
 	for _, v := range values {
@@ -81,18 +81,18 @@ func (s *Struct) BindFields(values []FieldValueEntity, buildValueBinder ValueBin
 					return &FieldBindingError{field, val, err}
 				}
 
-				index := requiredFields.IndexOf(field)
+				index := requiredFields.indexOf(field)
 				if index != -1 {
 					// eliminate the field from slice if found
-					requiredFields.RemoveIndex(index)
+					requiredFields.removeIndex(index)
 				}
 			}
 		}
 	}
 
 	// check if the requiredFields still have fields don't be set
-	if !requiredFields.IsEmpty() {
-		field, _ := requiredFields.Get(0)
+	if !requiredFields.isEmpty() {
+		field, _ := requiredFields.get(0)
 		return &MissingRequiredFieldError{field, nil}
 	}
 
@@ -106,7 +106,7 @@ func (s *Struct) BindChan(iterator <-chan FieldValueEntity, buildValueBinder Val
 	if buildValueBinder == nil {
 		return fmt.Errorf("missing ValueBinderProvider")
 	}
-	var requiredFields = s.requiredFields.Clone()
+	var requiredFields = s.requiredFields.clone()
 
 	// mapping values
 	for v := range iterator {
@@ -119,18 +119,18 @@ func (s *Struct) BindChan(iterator <-chan FieldValueEntity, buildValueBinder Val
 					return &FieldBindingError{field, val, err}
 				}
 
-				index := requiredFields.IndexOf(field)
+				index := requiredFields.indexOf(field)
 				if index != -1 {
 					// eliminate the field from slice if found
-					requiredFields.RemoveIndex(index)
+					requiredFields.removeIndex(index)
 				}
 			}
 		}
 	}
 
 	// check if the requiredFields still have fields don't be set
-	if !requiredFields.IsEmpty() {
-		field, _ := requiredFields.Get(0)
+	if !requiredFields.isEmpty() {
+		field, _ := requiredFields.get(0)
 		return &MissingRequiredFieldError{field, nil}
 	}
 

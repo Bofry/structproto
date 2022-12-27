@@ -93,8 +93,8 @@ func (r *StructProtoResolver) internalResolve(rv reflect.Value) (*Struct, error)
 			field.appendFlags(tag.Flags...)
 
 			prototype.fields[tag.Name] = field
-			if field.flags.Has(RequiredFlag) {
-				prototype.requiredFields.Append(tag.Name)
+			if field.flags.has(RequiredFlag) {
+				prototype.requiredFields.append(tag.Name)
 			}
 		}
 	}

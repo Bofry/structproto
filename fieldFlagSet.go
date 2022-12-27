@@ -57,6 +57,21 @@ func (s *FieldFlagSet) Get(index int) (string, bool) {
 	return "", false
 }
 
+func (s *FieldFlagSet) Find(predicate func(v string) bool) bool {
+	if s.IsEmpty() {
+		return false
+	}
+
+	set := *s
+	for _, v := range set {
+		found := predicate(v)
+		if found {
+			return true
+		}
+	}
+	return false
+}
+
 func (s *FieldFlagSet) Has(v string) bool {
 	if s.IsEmpty() {
 		return false
@@ -82,6 +97,10 @@ func (s *FieldFlagSet) IndexOf(v string) int {
 
 func (s *FieldFlagSet) IsEmpty() bool {
 	return len(*s) == 0
+}
+
+func (s *FieldFlagSet) ToArray() []string {
+	return *s
 }
 
 func (s *FieldFlagSet) Len() int {

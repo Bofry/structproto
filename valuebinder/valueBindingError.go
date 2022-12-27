@@ -2,10 +2,6 @@ package valuebinder
 
 import "fmt"
 
-const (
-	errStringValueLength = 24
-)
-
 // A ValueBindingError represents an error when value binding failure.
 type ValueBindingError struct {
 	Value interface{}

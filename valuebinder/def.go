@@ -8,11 +8,18 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/Bofry/structproto/internal"
+	"github.com/Bofry/structproto/common"
 	"github.com/Bofry/types"
 )
 
+const (
+	errStringValueLength = 24
+)
+
 var (
+	typeOfString = reflect.TypeOf("")
+	typeOfBytes  = reflect.TypeOf([]byte(nil))
+
 	typeOfDuration   = reflect.TypeOf(time.Nanosecond)
 	typeOfUrl        = reflect.TypeOf(url.URL{})
 	typeOfTime       = reflect.TypeOf(time.Time{})
@@ -22,6 +29,6 @@ var (
 	typeOfBuffer     = reflect.TypeOf(bytes.Buffer{})
 )
 
-var _ internal.ValueBindProvider = BuildIgnoreBinder
+var _ common.ValueBindProvider = BuildIgnoreBinder
 
-func BuildIgnoreBinder(rv reflect.Value) internal.ValueBinder { return nil }
+func BuildIgnoreBinder(rv reflect.Value) common.ValueBinder { return nil }

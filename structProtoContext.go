@@ -9,10 +9,7 @@ func (ctx *StructProtoContext) Target() reflect.Value {
 }
 
 func (ctx *StructProtoContext) FieldInfo(name string) FieldInfo {
-	if field, ok := ctx.fields[name]; ok {
-		return field
-	}
-	return nil
+	return ctx.getFieldInfoImpl(name)
 }
 
 func (ctx *StructProtoContext) Field(name string) (v reflect.Value, ok bool) {
@@ -36,9 +33,9 @@ func (ctx *StructProtoContext) RequiredFields() []string {
 }
 
 func (ctx *StructProtoContext) IsRequired(name string) bool {
-	field := ctx.FieldInfo(name)
+	field := ctx.getFieldInfoImpl(name)
 	if field != nil {
-		return field.HasFlag(RequiredFlag)
+		return field.flags.Has(RequiredFlag)
 	}
 	return false
 }
@@ -69,7 +66,14 @@ func (ctx *StructProtoContext) CheckIfMissingRequiredFields(visitFieldProc func(
 	return nil
 }
 
-func buildStructProtoContext(prototype *Struct) (*StructProtoContext, error) {
-	context := StructProtoContext(*prototype)
-	return &context, nil
+func (ctx *StructProtoContext) getFieldInfoImpl(name string) *FieldInfoImpl {
+	if field, ok := ctx.fields[name]; ok {
+		return field
+	}
+	return nil
+}
+
+func buildStructProtoContext(s *Struct) *StructProtoContext {
+	context := StructProtoContext(*s)
+	return &context
 }

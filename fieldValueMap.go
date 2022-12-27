@@ -1,14 +1,14 @@
 package structproto
 
-var _ FieldValueCollectionIterator = new(FieldValueMap)
+var _ Iterator = new(FieldValueMap)
 
 type FieldValueMap map[string]interface{}
 
-func (values FieldValueMap) Iterate() <-chan FieldValueEntry {
-	c := make(chan FieldValueEntry, 1)
+func (values FieldValueMap) Iterate() <-chan FieldValueEntity {
+	c := make(chan FieldValueEntity, 1)
 	go func() {
 		for k, v := range values {
-			c <- FieldValueEntry{k, v}
+			c <- FieldValueEntity{k, v}
 		}
 		close(c)
 	}()

@@ -83,16 +83,17 @@ func (r *StructProtoResolver) internalResolve(rv reflect.Value) (*Struct, error)
 			return nil, err
 		}
 		if tag != nil {
-			field := &Field{
-				name:  tag.Name,
-				index: i,
-				desc:  tag.Desc,
-				tag:   t.Field(i).Tag,
+			field := &FieldInfoImpl{
+				idName: fieldname,
+				name:   tag.Name,
+				index:  i,
+				desc:   tag.Desc,
+				tag:    t.Field(i).Tag,
 			}
 			field.appendFlags(tag.Flags...)
 
 			prototype.fields[tag.Name] = field
-			if field.HasFlag(RequiredFlag) {
+			if field.flags.Has(RequiredFlag) {
 				prototype.requiredFields.Append(tag.Name)
 			}
 		}

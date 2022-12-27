@@ -1,11 +1,11 @@
 package tagresolver
 
-import "github.com/Bofry/structproto/internal"
+import "github.com/Bofry/structproto/common"
 
-var _ internal.TagResolver = NoneTagResolver
+var _ common.TagResolver = NoneTagResolver
 
-func NoneTagResolver(fieldname, token string) (*internal.Tag, error) {
-	var tag = &internal.Tag{
+func NoneTagResolver(fieldname, token string) (*common.Tag, error) {
+	var tag = &common.Tag{
 		Name: fieldname,
 	}
 	return tag, nil

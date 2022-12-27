@@ -8,16 +8,16 @@ import (
 )
 
 var (
-	emptyUrl  = url.URL{}
-	typeOfUrl = reflect.TypeOf(emptyUrl)
+	typeOfUrl = reflect.TypeOf(url.URL{})
 )
 
 func Url(from interface{}) (url.URL, error) {
-
 	if T, ok := from.(url.URL); ok {
 		return T, nil
 	} else if T, ok := from.(*url.URL); ok {
 		return *T, nil
+	} else if T, ok := from.(string); ok {
+		return convStringToUrl(T)
 	}
 
 	rv := reflect.ValueOf(reflectutil.Indirect(from))
@@ -32,7 +32,7 @@ func Url(from interface{}) (url.URL, error) {
 			}
 		}
 	}
-	return emptyUrl, newConvErr(from, "url.URL")
+	return url.URL{}, newConvErr(from, "url.URL")
 }
 
 func convStringToUrl(value string) (url.URL, error) {

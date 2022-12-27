@@ -10,33 +10,38 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Bofry/structproto/internal"
+	"github.com/Bofry/structproto/common"
 	"github.com/Bofry/structproto/util/reflectutil"
 	"github.com/Bofry/types"
 	"github.com/cstockton/go-conv"
 )
 
 var (
-	_ internal.ValueBindProvider = BuildStringArgsBinder
-	_ internal.ValueBinder       = new(StringArgsBinder)
+	_ common.ValueBindProvider = BuildStringBinder
+	_ common.ValueBinder       = new(StringBinder)
 )
 
-type StringArgsBinder reflect.Value
+type StringBinder reflect.Value
 
-func BuildStringArgsBinder(rv reflect.Value) internal.ValueBinder {
-	return StringArgsBinder(rv)
+func BuildStringBinder(rv reflect.Value) common.ValueBinder {
+	return StringBinder(rv)
 }
 
-func (binder StringArgsBinder) Bind(input interface{}) error {
+func (binder StringBinder) Bind(input interface{}) error {
 	v, ok := input.(string)
 	if !ok {
 		return fmt.Errorf("cannot bind type %T from input", input)
 	}
 	rv := reflect.Value(binder)
+
+	if typeOfString.AssignableTo(rv.Type()) {
+		rv.Set(reflect.ValueOf(v))
+		return nil
+	}
 	return binder.bindValueImpl(rv, v)
 }
 
-func (binder StringArgsBinder) bindValueImpl(rv reflect.Value, v string) error {
+func (binder StringBinder) bindValueImpl(rv reflect.Value, v string) error {
 	rv = reflect.Indirect(reflectutil.AssignZero(rv))
 	var err error
 
@@ -84,7 +89,12 @@ func (binder StringArgsBinder) bindValueImpl(rv reflect.Value, v string) error {
 				for i, elem := range array {
 					err := binder.bindValueImpl(container.Index(i), elem)
 					if err != nil {
-						return err
+						return &SliceBindingError{
+							Value: v,
+							Kind:  rv.Kind().String(),
+							Index: i,
+							Err:   err,
+						}
 					}
 				}
 				rv.Set(container)

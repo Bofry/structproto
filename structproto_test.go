@@ -1,167 +1,173 @@
-package structproto
+package structproto_test
 
 import (
 	"reflect"
 	"testing"
 	"time"
 
+	"github.com/Bofry/structproto"
 	"github.com/Bofry/structproto/valuebinder"
 )
 
-type mockCharacter struct {
-	Name       string    `demo:"*NAME"`
-	Age        *int      `demo:"*AGE"`
-	Alias      []string  `demo:"ALIAS"`
-	DatOfBirth time.Time `demo:"DATE_OF_BIRTH;the character's birth of date"`
-	Remark     string    `demo:"REMARK,flag1,flag2,,;note the character's personal favor"`
-	Numbers    []int     `demo:"NUMBERS"`
-}
+func TestStructBindMap_MissingRequiredField(t *testing.T) {
+	s := struct {
+		Name        string    `demo:"*NAME"`
+		Age         *int      `demo:"*AGE"`
+		Alias       []string  `demo:"ALIAS"`
+		DateOfBirth time.Time `demo:"DATE_OF_BIRTH;the character's birth of date"`
+		Remark      string    `demo:"REMARK,flag1,flag2,,;note the character's personal favor"`
+		Numbers     []int     `demo:"NUMBERS"`
+	}{}
 
-func TestResolveCharacterStruct(t *testing.T) {
-	c := mockCharacter{}
-	prototype, err := Prototypify(&c, &StructProtoResolveOption{
+	prototype, err := structproto.Prototypify(&s, &structproto.StructProtoResolveOption{
 		TagName: "demo",
 	})
 	if err != nil {
 		t.Error(err)
 	}
-	expectedFields := map[string]Field{
-		"NAME": {
-			name:  "NAME",
-			desc:  "",
-			index: 0,
-			flags: []string{"required"},
-			tag:   `demo:"*NAME"`,
-		},
-		"AGE": {
-			name:  "AGE",
-			desc:  "",
-			index: 1,
-			flags: []string{"required"},
-			tag:   `demo:"*AGE"`,
-		},
-		"ALIAS": {
-			name:  "ALIAS",
-			desc:  "",
-			index: 2,
-			flags: []string(nil),
-			tag:   `demo:"ALIAS"`,
-		},
-		"DATE_OF_BIRTH": {
-			name:  "DATE_OF_BIRTH",
-			desc:  "the character's birth of date",
-			index: 3,
-			flags: []string(nil),
-			tag:   `demo:"DATE_OF_BIRTH;the character's birth of date"`,
-		},
-		"REMARK": {
-			name:  "REMARK",
-			desc:  "note the character's personal favor",
-			index: 4,
-			flags: []string{"flag1", "flag2"},
-			tag:   `demo:"REMARK,flag1,flag2,,;note the character's personal favor"`,
-		},
-		"NUMBERS": {
-			name:  "NUMBERS",
-			desc:  "",
-			index: 5,
-			flags: []string(nil),
-			tag:   `demo:"NUMBERS"`,
-		},
-	}
-
-	if len(expectedFields) != len(prototype.fields) {
-		t.Errorf("assert 'structproto.fields' length :: expected '%v', got '%v'", len(expectedFields), len(prototype.fields))
-	}
-	for k, v := range expectedFields {
-		if f, ok := prototype.fields[k]; !ok {
-			t.Errorf("assert 'structproto.fields' key '%s' not found", k)
-		} else {
-			if (f.Name() != v.name) ||
-				(f.Index() != v.index) ||
-				(f.Desc() != v.desc) ||
-				(f.Tag() != v.tag) ||
-				(!reflect.DeepEqual([]string(f.Flags()), []string(v.flags))) {
-				t.Errorf("assert 'structproto.fields' key '%s' :: expected '%#v', got '%#v'", k, v, f)
-			}
-		}
-	}
-	expectedRequiredFields := FieldFlagSet([]string{"AGE", "NAME"})
-	if !reflect.DeepEqual(expectedRequiredFields, prototype.requiredFields) {
-		t.Errorf("assert 'mockCharacter.requiredFields':: expected '%#v', got '%#v'", expectedRequiredFields, prototype.requiredFields)
-	}
-}
-
-func TestBindFields_MissingRequiredField(t *testing.T) {
-	c := mockCharacter{}
-	prototype, err := Prototypify(&c, &StructProtoResolveOption{
-		TagName: "demo",
-	})
-	if err != nil {
-		t.Error(err)
-	}
-	err = prototype.BindFields(map[string]interface{}{
+	err = prototype.BindMap(map[string]interface{}{
 		"NAME":          "luffy",
 		"ALIAS":         "lucy",
 		"DATE_OF_BIRTH": "2020-05-05T00:00:00Z",
-	}, valuebinder.BuildStringArgsBinder)
+	}, valuebinder.BuildStringBinder)
 	if err == nil {
 		t.Errorf("the 'Mapper.Map()' should throw '%s' error", "with missing symbol 'AGE'")
 	}
 }
 
-func TestBindValues_Well(t *testing.T) {
-	c := mockCharacter{}
-	prototype, err := Prototypify(&c, &StructProtoResolveOption{
+func TestStructBindIterator_WithFieldValueMap(t *testing.T) {
+	s := struct {
+		Name        string    `demo:"*NAME"`
+		Age         *int      `demo:"*AGE"`
+		Alias       []string  `demo:"ALIAS"`
+		DateOfBirth time.Time `demo:"DATE_OF_BIRTH;the character's birth of date"`
+		Remark      string    `demo:"REMARK,flag1,flag2,,;note the character's personal favor"`
+		Numbers     []int     `demo:"NUMBERS"`
+	}{}
+
+	prototype, err := structproto.Prototypify(&s, &structproto.StructProtoResolveOption{
 		TagName: "demo",
 	})
 	if err != nil {
 		t.Error(err)
 	}
-	err = prototype.BindValues(FieldValueMap{
+	err = prototype.BindIterator(structproto.FieldValueMap{
 		"NAME":          "luffy",
 		"AGE":           "19",
 		"ALIAS":         "lucy",
 		"DATE_OF_BIRTH": "2020-05-05T00:00:00Z",
 		"NUMBERS":       "5,12",
-	}, valuebinder.BuildStringArgsBinder)
+	}, valuebinder.BuildStringBinder)
 	if err != nil {
 		t.Error(err)
 	}
-
-	if c.Name != "luffy" {
-		t.Errorf("assert 'mockCharacter.Name':: expected '%v', got '%v'", "luffy", c.Name)
+	expectedName := "luffy"
+	if s.Name != expectedName {
+		t.Errorf("assert 'Name':: expected '%v', got '%v'", expectedName, s.Name)
 	}
-	if *c.Age != 19 {
-		t.Errorf("assert 'mockCharacter.Age':: expected '%v', got '%v'", 19, c.Age)
+	expectedAge := 19
+	if *s.Age != expectedAge {
+		t.Errorf("assert 'Age':: expected '%v', got '%v'", expectedAge, s.Age)
 	}
 	expectedAlias := []string{"lucy"}
-	if !reflect.DeepEqual(c.Alias, expectedAlias) {
-		t.Errorf("assert 'mockCharacter.Alias':: expected '%#v', got '%#v'", expectedAlias, c.Alias)
+	if !reflect.DeepEqual(s.Alias, expectedAlias) {
+		t.Errorf("assert 'Alias':: expected '%#v', got '%#v'", expectedAlias, s.Alias)
 	}
 	expectedDateOfBirth := time.Date(2020, 5, 5, 0, 0, 0, 0, time.UTC)
-	if c.DatOfBirth != expectedDateOfBirth {
-		t.Errorf("assert 'mockCharacter.DatOfBirth':: expected '%v', got '%v'", expectedDateOfBirth, c.DatOfBirth)
+	if s.DateOfBirth != expectedDateOfBirth {
+		t.Errorf("assert 'DateOfBirth':: expected '%v', got '%v'", expectedDateOfBirth, s.DateOfBirth)
 	}
 	expectedNumbers := []int{5, 12}
-	if !reflect.DeepEqual(c.Numbers, expectedNumbers) {
-		t.Errorf("assert 'mockCharacter.Numbers':: expected '%#v', got '%#v'", expectedNumbers, c.Numbers)
+	if !reflect.DeepEqual(s.Numbers, expectedNumbers) {
+		t.Errorf("assert 'Numbers':: expected '%#v', got '%#v'", expectedNumbers, s.Numbers)
 	}
 }
 
-func TestBind_MissingRequiredField(t *testing.T) {
+type EntitySet [][2]string
+
+func (set EntitySet) Iterate() <-chan structproto.FieldValueEntity {
+	c := make(chan structproto.FieldValueEntity, 1)
+	go func() {
+		for _, v := range set {
+			c <- structproto.FieldValueEntity{
+				Field: v[0],
+				Value: v[1],
+			}
+		}
+		close(c)
+	}()
+	return c
+}
+
+func TestStructBindIterator_Well(t *testing.T) {
+	s := struct {
+		Name        string    `demo:"*NAME"`
+		Age         *int      `demo:"*AGE"`
+		Alias       []string  `demo:"ALIAS"`
+		DateOfBirth time.Time `demo:"DATE_OF_BIRTH;the character's birth of date"`
+		Remark      string    `demo:"REMARK,flag1,flag2,,;note the character's personal favor"`
+		Numbers     []int     `demo:"NUMBERS"`
+	}{}
+
+	prototype, err := structproto.Prototypify(&s, &structproto.StructProtoResolveOption{
+		TagName: "demo",
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	err = prototype.BindIterator(EntitySet{
+		{"NAME", "luffy"},
+		{"AGE", "19"},
+		{"ALIAS", "lucy"},
+		{"DATE_OF_BIRTH", "2020-05-05T00:00:00Z"},
+		{"NUMBERS", "5,12"},
+	}, valuebinder.BuildStringBinder)
+	if err != nil {
+		t.Error(err)
+	}
+	expectedName := "luffy"
+	if s.Name != expectedName {
+		t.Errorf("assert 'Name':: expected '%v', got '%v'", expectedName, s.Name)
+	}
+	expectedAge := 19
+	if *s.Age != expectedAge {
+		t.Errorf("assert 'Age':: expected '%v', got '%v'", expectedAge, s.Age)
+	}
+	expectedAlias := []string{"lucy"}
+	if !reflect.DeepEqual(s.Alias, expectedAlias) {
+		t.Errorf("assert 'Alias':: expected '%#v', got '%#v'", expectedAlias, s.Alias)
+	}
+	expectedDateOfBirth := time.Date(2020, 5, 5, 0, 0, 0, 0, time.UTC)
+	if s.DateOfBirth != expectedDateOfBirth {
+		t.Errorf("assert 'DateOfBirth':: expected '%v', got '%v'", expectedDateOfBirth, s.DateOfBirth)
+	}
+	expectedNumbers := []int{5, 12}
+	if !reflect.DeepEqual(s.Numbers, expectedNumbers) {
+		t.Errorf("assert 'Numbers':: expected '%#v', got '%#v'", expectedNumbers, s.Numbers)
+	}
+}
+
+func TestStructBind_MissingRequiredField(t *testing.T) {
 	input := map[string]string{
 		"NAME": "luffy",
 		// "AGE":           "19",    -- we won't set the required field
 		"ALIAS":         "lucy",
 		"DATE_OF_BIRTH": "2020-05-05T00:00:00Z",
 	}
-	binder := &mockMapStructBinder{
+	binder := &MapBinder{
 		values: input,
 	}
 
-	c := mockCharacter{}
-	prototype, err := Prototypify(&c, &StructProtoResolveOption{
+	s := struct {
+		Name        string    `demo:"*NAME"`
+		Age         *int      `demo:"*AGE"`
+		Alias       []string  `demo:"ALIAS"`
+		DateOfBirth time.Time `demo:"DATE_OF_BIRTH;the character's birth of date"`
+		Remark      string    `demo:"REMARK,flag1,flag2,,;note the character's personal favor"`
+		Numbers     []int     `demo:"NUMBERS"`
+	}{}
+
+	prototype, err := structproto.Prototypify(&s, &structproto.StructProtoResolveOption{
 		TagName: "demo",
 	})
 
@@ -169,9 +175,9 @@ func TestBind_MissingRequiredField(t *testing.T) {
 	if err == nil {
 		t.Errorf("the 'Process()' should throw '%s' error", "missing required symbol 'AGE'")
 	} else {
-		missingRequiredFieldError, ok := err.(*MissingRequiredFieldError)
+		missingRequiredFieldError, ok := err.(*structproto.MissingRequiredFieldError)
 		if !ok {
-			t.Errorf("the error expected '%T', got '%T'", &MissingRequiredFieldError{}, err)
+			t.Errorf("the error expected '%T', got '%T'", &structproto.MissingRequiredFieldError{}, err)
 		}
 		if missingRequiredFieldError.Field != "AGE" {
 			t.Errorf("assert 'MissingRequiredFieldError.Field':: expected '%v', got '%v'", "AGE", missingRequiredFieldError.Field)
@@ -179,19 +185,27 @@ func TestBind_MissingRequiredField(t *testing.T) {
 	}
 }
 
-func TestBind_Well(t *testing.T) {
+func TestStructBind_Well(t *testing.T) {
 	input := map[string]string{
 		"NAME":          "luffy",
 		"AGE":           "19",
 		"ALIAS":         "lucy",
 		"DATE_OF_BIRTH": "2020-05-05T00:00:00Z",
 	}
-	binder := &mockMapStructBinder{
+	binder := &MapBinder{
 		values: input,
 	}
 
-	c := mockCharacter{}
-	prototype, err := Prototypify(&c, &StructProtoResolveOption{
+	s := struct {
+		Name        string    `demo:"*NAME"`
+		Age         *int      `demo:"*AGE"`
+		Alias       []string  `demo:"ALIAS"`
+		DateOfBirth time.Time `demo:"DATE_OF_BIRTH;the character's birth of date"`
+		Remark      string    `demo:"REMARK,flag1,flag2,,;note the character's personal favor"`
+		Numbers     []int     `demo:"NUMBERS"`
+	}{}
+
+	prototype, err := structproto.Prototypify(&s, &structproto.StructProtoResolveOption{
 		TagName: "demo",
 	})
 	err = prototype.Bind(binder)
@@ -199,43 +213,178 @@ func TestBind_Well(t *testing.T) {
 		t.Error(err)
 	}
 
-	if c.Name != "luffy" {
-		t.Errorf("assert 'mockCharacter.Name':: expected '%v', got '%v'", "luffy", c.Name)
+	expectedName := "luffy"
+	if s.Name != "luffy" {
+		t.Errorf("assert 'Name':: expected '%v', got '%v'", expectedName, s.Name)
 	}
-	if *c.Age != 19 {
-		t.Errorf("assert 'mockCharacter.Age':: expected '%v', got '%v'", 19, c.Age)
+	expectedAge := 19
+	if *s.Age != expectedAge {
+		t.Errorf("assert 'Age':: expected '%v', got '%v'", expectedAge, s.Age)
 	}
 	expectedAlias := []string{"lucy"}
-	if !reflect.DeepEqual(c.Alias, expectedAlias) {
-		t.Errorf("assert 'mockCharacter.Alias':: expected '%#v', got '%#v'", expectedAlias, c.Alias)
+	if !reflect.DeepEqual(s.Alias, expectedAlias) {
+		t.Errorf("assert 'Alias':: expected '%#v', got '%#v'", expectedAlias, s.Alias)
 	}
 	expectedDateOfBirth := time.Date(2020, 5, 5, 0, 0, 0, 0, time.UTC)
-	if c.DatOfBirth != expectedDateOfBirth {
-		t.Errorf("assert 'mockCharacter.DatOfBirth':: expected '%v', got '%v'", expectedDateOfBirth, c.DatOfBirth)
+	if s.DateOfBirth != expectedDateOfBirth {
+		t.Errorf("assert 'DateOfBirth':: expected '%v', got '%v'", expectedDateOfBirth, s.DateOfBirth)
 	}
 }
 
-type mockMapStructBinder struct {
+func TestStructBindMap_Well(t *testing.T) {
+	s := struct {
+		Name        string    `demo:"*NAME"`
+		Age         *int      `demo:"*AGE"`
+		Alias       []string  `demo:"ALIAS"`
+		DateOfBirth time.Time `demo:"DATE_OF_BIRTH;the character's birth of date"`
+		Remark      string    `demo:"REMARK,flag1,flag2,,;note the character's personal favor"`
+		Numbers     []int     `demo:"NUMBERS"`
+	}{}
+
+	prototype, err := structproto.Prototypify(&s, &structproto.StructProtoResolveOption{
+		TagName: "demo",
+	})
+	err = prototype.BindMap(map[string]interface{}{
+		"NAME":          "luffy",
+		"AGE":           "19",
+		"ALIAS":         "lucy",
+		"DATE_OF_BIRTH": "2020-05-05T00:00:00Z",
+	}, valuebinder.BuildStringBinder)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if s.Name != "luffy" {
+		t.Errorf("assert 'Name':: expected '%v', got '%v'", "luffy", s.Name)
+	}
+	if *s.Age != 19 {
+		t.Errorf("assert 'Age':: expected '%v', got '%v'", 19, s.Age)
+	}
+	expectedAlias := []string{"lucy"}
+	if !reflect.DeepEqual(s.Alias, expectedAlias) {
+		t.Errorf("assert 'Alias':: expected '%#v', got '%#v'", expectedAlias, s.Alias)
+	}
+	expectedDateOfBirth := time.Date(2020, 5, 5, 0, 0, 0, 0, time.UTC)
+	if s.DateOfBirth != expectedDateOfBirth {
+		t.Errorf("assert 'DateOfBirth':: expected '%v', got '%v'", expectedDateOfBirth, s.DateOfBirth)
+	}
+}
+
+func TestStructVisitor(t *testing.T) {
+	s := struct {
+		Name        string    `demo:"*NAME"`
+		Age         *int      `demo:"*AGE"`
+		Alias       []string  `demo:"ALIAS"`
+		DateOfBirth time.Time `demo:"DATE_OF_BIRTH;the character's birth of date"`
+		Remark      string    `demo:"REMARK,flag1,flag2,,;note the character's personal favor"`
+	}{}
+
+	prototype, err := structproto.Prototypify(&s, &structproto.StructProtoResolveOption{
+		TagName: "demo",
+	})
+	err = prototype.BindMap(map[string]interface{}{
+		"NAME":          "luffy",
+		"AGE":           "19",
+		"ALIAS":         "lucy",
+		"DATE_OF_BIRTH": "2020-05-05T00:00:00Z",
+	}, valuebinder.BuildStringBinder)
+	if err != nil {
+		t.Error(err)
+	}
+
+	visitData := make(map[string]interface{})
+	prototype.Visit(func(name string, rv reflect.Value, info structproto.FieldInfo) {
+		visitData[name] = rv.Interface()
+	})
+
+	var (
+		exceptedAge int = 19
+	)
+	expectedVisitData := map[string]interface{}{
+		"NAME":          "luffy",
+		"AGE":           &exceptedAge,
+		"ALIAS":         []string{"lucy"},
+		"DATE_OF_BIRTH": time.Date(2020, 5, 5, 0, 0, 0, 0, time.UTC),
+		"REMARK":        "",
+	}
+	if len(expectedVisitData) != len(visitData) {
+		t.Errorf("assert visitData size:: expected %d, got %d", len(expectedVisitData), len(visitData))
+	}
+	// check assigned fields
+	for k, v := range visitData {
+		switch k {
+		case "NAME":
+			expected := expectedVisitData[k].(string)
+			actual, ok := v.(string)
+			if !ok {
+				t.Errorf("assert '%s':: expected (%T), got (%T)", k, expectedVisitData[k], v)
+			}
+			if actual != expected {
+				t.Errorf("assert '%s':: expected '%#v', got '%#v'", k, expected, actual)
+			}
+		case "AGE":
+			expected := expectedVisitData[k].(*int)
+			actual, ok := v.(*int)
+			if !ok {
+				t.Errorf("assert '%s':: expected (%T), got (%T)", k, expectedVisitData[k], v)
+			}
+			if *actual != *expected {
+				t.Errorf("assert '%s':: expected '%#v', got '%#v'", k, expected, actual)
+			}
+		case "ALIAS":
+			expected := expectedVisitData[k].([]string)
+			actual, ok := v.([]string)
+			if !ok {
+				t.Errorf("assert '%s':: expected (%T), got (%T)", k, expectedVisitData[k], v)
+			}
+			if !reflect.DeepEqual(actual, expected) {
+				t.Errorf("assert '%s':: expected '%#v', got '%#v'", k, expected, actual)
+			}
+		case "DATE_OF_BIRTH":
+			expected := expectedVisitData[k].(time.Time)
+			actual, ok := v.(time.Time)
+			if !ok {
+				t.Errorf("assert '%s':: expected (%T), got (%T)", k, expectedVisitData[k], v)
+			}
+			if !reflect.DeepEqual(actual, expected) {
+				t.Errorf("assert '%s':: expected '%#v', got '%#v'", k, expected, actual)
+			}
+		case "REMARK":
+			expected := expectedVisitData[k].(string)
+			actual, ok := v.(string)
+			if !ok {
+				t.Errorf("assert '%s':: expected (%T), got (%T)", k, expectedVisitData[k], v)
+			}
+			if !reflect.DeepEqual(actual, expected) {
+				t.Errorf("assert '%s':: expected '%#v', got '%#v'", k, expected, actual)
+			}
+		default:
+			t.Errorf("unknown field '%s'", k)
+		}
+	}
+}
+
+type MapBinder struct {
 	values map[string]string
 }
 
-func (p *mockMapStructBinder) Init(context *StructProtoContext) error {
+func (b *MapBinder) Init(context *structproto.StructProtoContext) error {
 	return nil
 }
 
-func (p *mockMapStructBinder) Bind(field FieldInfo, rv reflect.Value) error {
+func (b *MapBinder) Bind(field structproto.FieldInfo, rv reflect.Value) error {
 	name := field.Name()
-	if v, ok := p.values[name]; ok {
-		return valuebinder.StringArgsBinder(rv).Bind(v)
+	if v, ok := b.values[name]; ok {
+		return valuebinder.StringBinder(rv).Bind(v)
 	}
 	return nil
 }
 
-func (p *mockMapStructBinder) Deinit(context *StructProtoContext) error {
+func (b *MapBinder) Deinit(context *structproto.StructProtoContext) error {
 	return context.CheckIfMissingRequiredFields(func() <-chan string {
 		c := make(chan string)
 		go func() {
-			for k := range p.values {
+			for k := range b.values {
 				c <- k
 			}
 			close(c)
@@ -244,43 +393,46 @@ func (p *mockMapStructBinder) Deinit(context *StructProtoContext) error {
 	})
 }
 
-func TestUrlTagResolver(t *testing.T) {
-	v := mockUrlPathManager{}
-	prototype, err := Prototypify(&v,
-		&StructProtoResolveOption{
-			TagName:     "url",
-			TagResolver: resolveUrlTag,
+func TestPathTagResolver(t *testing.T) {
+	type Handler func() string
+
+	v := struct {
+		Root Handler `path:"/"`
+		Echo Handler `path:"/Echo"`
+	}{}
+
+	prototype, err := structproto.Prototypify(&v,
+		&structproto.StructProtoResolveOption{
+			TagName:     "path",
+			TagResolver: ResolvePathTag,
 		})
 	if err != nil {
 		t.Error(err)
 	}
 
-	err = prototype.BindValues(FieldValueMap{
-		"/":     "root",
-		"/Echo": "echo",
-	}, valuebinder.BuildStringArgsBinder)
+	err = prototype.BindMap(map[string]interface{}{
+		"/":     func() string { return "root" },
+		"/Echo": func() string { return "echo" },
+	}, valuebinder.BuildScalarBinder)
 	if err != nil {
 		t.Error(err)
 	}
 
-	if v.Root != "root" {
-		t.Errorf("assert 'mockUrlPathManager.Root':: expected '%v', got '%v'", "root", v.Root)
+	expectRoot := func() string { return "root" }
+	if v.Root() != expectRoot() {
+		t.Errorf("assert 'Root':: expected '%v', got '%v'", expectRoot(), v.Root())
 	}
-	if v.Echo != "echo" {
-		t.Errorf("assert 'mockUrlPathManager.Echo':: expected '%v', got '%v'", "echo", v.Echo)
+	expectEcho := func() string { return "echo" }
+	if v.Echo() != expectEcho() {
+		t.Errorf("assert 'Echo':: expected '%v', got '%v'", expectEcho(), v.Echo())
 	}
 }
 
-type mockUrlPathManager struct {
-	Root string `url:"/"`
-	Echo string `url:"/Echo"`
-}
-
-func resolveUrlTag(fieldname, token string) (*Tag, error) {
-	var tag *Tag
+func ResolvePathTag(fieldname, token string) (*structproto.Tag, error) {
+	var tag *structproto.Tag
 	if len(token) > 0 {
 		if token != "-" {
-			tag = &Tag{
+			tag = &structproto.Tag{
 				Name: token,
 			}
 		}

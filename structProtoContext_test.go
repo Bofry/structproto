@@ -3,10 +3,19 @@ package structproto
 import (
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestStructProtoContext(t *testing.T) {
-	c := mockCharacter{}
+	c := struct {
+		Name       string    `demo:"*NAME"`
+		Age        *int      `demo:"*AGE"`
+		Alias      []string  `demo:"ALIAS"`
+		DatOfBirth time.Time `demo:"DATE_OF_BIRTH;the character's birth of date"`
+		Remark     string    `demo:"REMARK,flag1,flag2,,;note the character's personal favor"`
+		Numbers    []int     `demo:"NUMBERS"`
+	}{}
+
 	prototype, err := Prototypify(&c, &StructProtoResolveOption{
 		TagName: "demo",
 	})
@@ -14,10 +23,7 @@ func TestStructProtoContext(t *testing.T) {
 		t.Error(err)
 	}
 
-	context, err := buildStructProtoContext(prototype)
-	if err != nil {
-		t.Error(err)
-	}
+	context := buildStructProtoContext(prototype)
 
 	expectedFieldNames := []string{"NAME", "AGE", "ALIAS", "DATE_OF_BIRTH", "REMARK", "NUMBERS"}
 	if !reflect.DeepEqual(expectedFieldNames, context.FieldNames()) {
@@ -29,19 +35,25 @@ func TestStructProtoContext(t *testing.T) {
 	}
 
 	{
-		field := context.FieldInfo("NAME")
+		field := context.getFieldInfoImpl("NAME")
 		if field == nil {
-			t.Errorf("assert 'structprotoContext.Field(\"NAME\")':: expected not nil, got '%#v'", field)
+			t.Errorf("assert 'FieldInfo.Field(\"NAME\")':: expected not nil, got '%#v'", field)
 		}
-		if field.Name() != "NAME" {
-			t.Errorf("assert 'structprotoField.Name()':: expected '%#v', got '%#v'", "NAME", field.Name())
+		expectedIDName := "Name"
+		if field.IDName() != expectedIDName {
+			t.Errorf("assert 'FieldInfo.IDName()':: expected '%#v', got '%#v'", expectedIDName, field.IDName())
 		}
-		if field.Index() != 0 {
-			t.Errorf("assert 'structprotoField.Index()':: expected '%#v', got '%#v'", "NAME", field.Name())
+		expectedName := "NAME"
+		if field.Name() != expectedName {
+			t.Errorf("assert 'FieldInfo.Name()':: expected '%#v', got '%#v'", expectedName, field.Name())
+		}
+		expectedIndex := 0
+		if field.Index() != expectedIndex {
+			t.Errorf("assert 'FieldInfo.Index()':: expected '%#v', got '%#v'", expectedIndex, field.Index())
 		}
 		expectedFlags := []string{"required"}
-		if !reflect.DeepEqual(expectedFlags, field.Flags()) {
-			t.Errorf("assert 'structprotoField.Flags()':: expected '%#v', got '%#v'", expectedFlags, field.Flags())
+		if !reflect.DeepEqual(expectedFlags, field.flags.ToArray()) {
+			t.Errorf("assert 'FieldInfo.Flags()':: expected '%#v', got '%#v'", expectedFlags, field.flags.ToArray())
 		}
 	}
 

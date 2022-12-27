@@ -3,35 +3,35 @@ package structproto
 import (
 	"reflect"
 
-	"github.com/Bofry/structproto/internal"
+	"github.com/Bofry/structproto/common"
 )
 
 const (
-	RequiredFlag = internal.RequiredFlag
-	BlankFlag    = internal.BlankFlag
+	RequiredFlag = common.RequiredFlag
+	BlankFlag    = common.BlankFlag
 )
 
 type (
-	ValueBindProvider = internal.ValueBindProvider
-	ValueBinder       = internal.ValueBinder
-	TagResolver       = internal.TagResolver
-	Tag               = internal.Tag
+	ValueBindProvider = common.ValueBindProvider
+	ValueBinder       = common.ValueBinder
+	TagResolver       = common.TagResolver
+	Tag               = common.Tag
 
-	FieldValueEntry struct {
+	FieldValueEntity struct {
 		Field string
 		Value interface{}
 	}
 
-	FieldValueCollectionIterator interface {
-		Iterate() <-chan FieldValueEntry
+	Iterator interface {
+		Iterate() <-chan FieldValueEntity
 	}
 
 	FieldInfo interface {
+		IDName() string
 		Name() string
 		Desc() string
 		Index() int
-		Flags() []string
-		HasFlag(v string) bool
+		HasFlag(predicate func(v string) bool) bool
 		Tag() reflect.StructTag
 	}
 
@@ -45,4 +45,6 @@ type (
 		TagName     string
 		TagResolver TagResolver
 	}
+
+	StructVisitor func(name string, rv reflect.Value, info FieldInfo)
 )

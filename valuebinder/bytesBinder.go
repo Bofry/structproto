@@ -5,31 +5,35 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/Bofry/structproto/internal"
+	"github.com/Bofry/structproto/common"
 	"github.com/Bofry/structproto/util/reflectutil"
 )
 
 var (
-	_ internal.ValueBindProvider = BuildBytesArgsBinder
-	_ internal.ValueBinder       = new(BytesArgsBinder)
+	_ common.ValueBindProvider = BuildBytesBinder
+	_ common.ValueBinder       = new(BytesBinder)
 )
 
-type BytesArgsBinder reflect.Value
+type BytesBinder reflect.Value
 
-func BuildBytesArgsBinder(rv reflect.Value) internal.ValueBinder {
-	return BytesArgsBinder(rv)
+func BuildBytesBinder(rv reflect.Value) common.ValueBinder {
+	return BytesBinder(rv)
 }
 
-func (binder BytesArgsBinder) Bind(input interface{}) error {
+func (binder BytesBinder) Bind(input interface{}) error {
 	buf, ok := input.([]byte)
 	if !ok {
 		return fmt.Errorf("cannot bind type %T from input", input)
 	}
 	rv := reflect.Value(binder)
+	if typeOfBytes.AssignableTo(rv.Type()) {
+		rv.Set(reflect.ValueOf(buf))
+		return nil
+	}
 	return binder.bindValueImpl(rv, buf)
 }
 
-func (binder BytesArgsBinder) bindValueImpl(rv reflect.Value, v []byte) error {
+func (binder BytesBinder) bindValueImpl(rv reflect.Value, v []byte) error {
 	rv = reflect.Indirect(reflectutil.AssignZero(rv))
 	var err error
 
@@ -44,7 +48,7 @@ func (binder BytesArgsBinder) bindValueImpl(rv reflect.Value, v []byte) error {
 		rv.Set(reflect.ValueOf(buf))
 	} else {
 		str := string(v)
-		return StringArgsBinder(reflect.Value(binder)).bindValueImpl(rv, str)
+		return StringBinder(reflect.Value(binder)).bindValueImpl(rv, str)
 	}
 	return err
 }

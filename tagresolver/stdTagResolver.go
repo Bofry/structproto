@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Bofry/structproto/internal"
+	"github.com/Bofry/structproto/common"
 )
 
-var _ internal.TagResolver = StdTagResolver
+var _ common.TagResolver = StdTagResolver
 
-func StdTagResolver(fieldname, token string) (*internal.Tag, error) {
+func StdTagResolver(fieldname, token string) (*common.Tag, error) {
 	if len(token) > 0 {
 		parts := strings.SplitN(token, ";", 2)
 		var desc string
@@ -34,16 +34,16 @@ func StdTagResolver(fieldname, token string) (*internal.Tag, error) {
 	
 				switch ch {
 				case '*':
-					flags = append(flags, internal.RequiredFlag)
+					flags = append(flags, common.RequiredFlag)
 				default:
 					return nil, fmt.Errorf("unknow attribute symbol '%c'", ch)
 				}
 			}
 		}
 
-		var tag *internal.Tag
+		var tag *common.Tag
 		if len(name) > 0 && name != "-" {
-			tag = &internal.Tag{
+			tag = &common.Tag{
 				Name:  name,
 				Flags: flags,
 				Desc:  desc,

@@ -300,11 +300,11 @@ func TestStructVisitor(t *testing.T) {
 	})
 
 	var (
-		exceptedAge int = 19
+		expectedAge int = 19
 	)
 	expectedVisitData := map[string]interface{}{
 		"NAME":          "luffy",
-		"AGE":           &exceptedAge,
+		"AGE":           &expectedAge,
 		"ALIAS":         []string{"lucy"},
 		"DATE_OF_BIRTH": time.Date(2020, 5, 5, 0, 0, 0, 0, time.UTC),
 		"REMARK":        "",

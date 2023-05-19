@@ -6,7 +6,6 @@ import (
 	"reflect"
 
 	"github.com/Bofry/structproto/common"
-	"github.com/Bofry/structproto/util/reflectutil"
 )
 
 var (
@@ -34,7 +33,6 @@ func (binder BytesBinder) Bind(input interface{}) error {
 }
 
 func (binder BytesBinder) bindValueImpl(rv reflect.Value, v []byte) error {
-	rv = reflect.Indirect(reflectutil.AssignZero(rv))
 	var err error
 
 	kind := rv.Kind()

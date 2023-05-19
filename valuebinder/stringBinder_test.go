@@ -209,3 +209,18 @@ func TestStringBinder_WithBuffer(t *testing.T) {
 		t.Errorf("assert 'target':: expected '%#v', got '%#v'", expected, target)
 	}
 }
+
+func TestStringBinder_WithPtrInt(t *testing.T) {
+	var target *int
+	var input = "1"
+
+	rv := reflect.ValueOf(&target).Elem()
+	binder := StringBinder(rv)
+	err := binder.Bind(input)
+	if err != nil {
+		t.Error(err)
+	}
+	if *target != 1 {
+		t.Errorf("assert 'target':: expected '%#v', got '%#v'", 1, *target)
+	}
+}

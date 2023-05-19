@@ -12,10 +12,10 @@ type SliceBindingError struct {
 func (e *SliceBindingError) Error() string {
 	if v, ok := e.Value.(string); ok {
 		if len(v) > errStringValueLength {
-			return fmt.Sprintf("cannot bind type %s with value (type %[1]T) '%v' at %d", e.Kind, v[:errStringValueLength], e.Index)
+			return fmt.Sprintf("cannot bind type %s with value (type %[1]T) '%v' at %d. %+v", e.Kind, v[:errStringValueLength], e.Index, e.Err)
 		}
 	}
-	return fmt.Sprintf("cannot bind type %s with value (type %[1]T) '%v'at %d", e.Kind, e.Value, e.Index)
+	return fmt.Sprintf("cannot bind type %s with value (type %[1]T) '%v'at %d. %+v", e.Kind, e.Value, e.Index, e.Err)
 }
 
 // Unwrap returns the underlying error.

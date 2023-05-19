@@ -3,8 +3,6 @@ package converter
 import (
 	"net"
 	"reflect"
-
-	reflectutil "github.com/Bofry/structproto/util/reflectutil"
 )
 
 var (
@@ -22,7 +20,7 @@ func IP(from interface{}) (net.IP, error) {
 		return convStringToIP(T)
 	}
 
-	rv := reflect.ValueOf(reflectutil.Indirect(from))
+	rv := reflect.ValueOf(indirect(from))
 	switch rv.Kind() {
 	case reflect.String:
 		return convStringToIP(rv.String())
@@ -30,13 +28,6 @@ func IP(from interface{}) (net.IP, error) {
 		if rv.CanInterface() {
 			if T, ok := rv.Interface().([]byte); ok {
 				return convBytesToIP(T)
-			}
-		}
-	case reflect.Struct:
-		if rv.Type().ConvertibleTo(typeOfUrl) {
-			valueConv := rv.Convert(typeOfUrl)
-			if valueConv.CanInterface() {
-				return valueConv.Interface().(net.IP), nil
 			}
 		}
 	}

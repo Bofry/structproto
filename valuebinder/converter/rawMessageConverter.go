@@ -3,8 +3,6 @@ package converter
 import (
 	"encoding/json"
 	"reflect"
-
-	reflectutil "github.com/Bofry/structproto/util/reflectutil"
 )
 
 var (
@@ -22,7 +20,7 @@ func RawMessage(from interface{}) (json.RawMessage, error) {
 		return convStringToRawMessage(T)
 	}
 
-	rv := reflect.ValueOf(reflectutil.Indirect(from))
+	rv := reflect.ValueOf(indirect(from))
 	switch rv.Kind() {
 	case reflect.String:
 		return convStringToRawMessage(rv.String())
@@ -30,13 +28,6 @@ func RawMessage(from interface{}) (json.RawMessage, error) {
 		if rv.CanInterface() {
 			if T, ok := rv.Interface().([]byte); ok {
 				return convBytesToRawMessage(T)
-			}
-		}
-	case reflect.Struct:
-		if rv.Type().ConvertibleTo(typeOfUrl) {
-			valueConv := rv.Convert(typeOfUrl)
-			if valueConv.CanInterface() {
-				return valueConv.Interface().(json.RawMessage), nil
 			}
 		}
 	}

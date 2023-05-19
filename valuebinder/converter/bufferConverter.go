@@ -3,8 +3,6 @@ package converter
 import (
 	"bytes"
 	"reflect"
-
-	reflectutil "github.com/Bofry/structproto/util/reflectutil"
 )
 
 var (
@@ -22,7 +20,7 @@ func Buffer(from interface{}) (bytes.Buffer, error) {
 		return convStringToBuffer(T)
 	}
 
-	rv := reflect.ValueOf(reflectutil.Indirect(from))
+	rv := reflect.ValueOf(indirect(from))
 	switch rv.Kind() {
 	case reflect.String:
 		return convStringToBuffer(rv.String())

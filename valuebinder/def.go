@@ -29,6 +29,10 @@ var (
 	typeOfBuffer     = reflect.TypeOf(bytes.Buffer{})
 )
 
+type (
+	typeBinder func(rv reflect.Value, v interface{}) error
+)
+
 var _ common.ValueBindProvider = BuildIgnoreBinder
 
 func BuildIgnoreBinder(rv reflect.Value) common.ValueBinder { return nil }

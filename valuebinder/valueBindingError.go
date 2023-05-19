@@ -12,10 +12,10 @@ type ValueBindingError struct {
 func (e *ValueBindingError) Error() string {
 	if v, ok := e.Value.(string); ok {
 		if len(v) > errStringValueLength {
-			return fmt.Sprintf("cannot bind type %s with value (type %[1]T) '%v'", e.Kind, v[:errStringValueLength])
+			return fmt.Sprintf("cannot bind type %s with value (type %[1]T) '%v'. %+v", e.Kind, v[:errStringValueLength], e.Err)
 		}
 	}
-	return fmt.Sprintf("cannot bind type %s with value (type %[1]T) '%v'", e.Kind, e.Value)
+	return fmt.Sprintf("cannot bind type %s with value (type %[1]T) '%v'. %+v", e.Kind, e.Value, e.Err)
 }
 
 // Unwrap returns the underlying error.

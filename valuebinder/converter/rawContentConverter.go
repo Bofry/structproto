@@ -3,7 +3,6 @@ package converter
 import (
 	"reflect"
 
-	reflectutil "github.com/Bofry/structproto/util/reflectutil"
 	"github.com/Bofry/types"
 )
 
@@ -22,7 +21,7 @@ func RawContent(from interface{}) (types.RawContent, error) {
 		return convStringToRawContent(T)
 	}
 
-	rv := reflect.ValueOf(reflectutil.Indirect(from))
+	rv := reflect.ValueOf(indirect(from))
 	switch rv.Kind() {
 	case reflect.String:
 		return convStringToRawContent(rv.String())
@@ -30,13 +29,6 @@ func RawContent(from interface{}) (types.RawContent, error) {
 		if rv.CanInterface() {
 			if T, ok := rv.Interface().([]byte); ok {
 				return convBytesToRawContent(T)
-			}
-		}
-	case reflect.Struct:
-		if rv.Type().ConvertibleTo(typeOfUrl) {
-			valueConv := rv.Convert(typeOfUrl)
-			if valueConv.CanInterface() {
-				return valueConv.Interface().(types.RawContent), nil
 			}
 		}
 	}

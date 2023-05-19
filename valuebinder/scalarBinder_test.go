@@ -220,3 +220,86 @@ func TestScalarBinder_WithIPSlice(t *testing.T) {
 		t.Errorf("assert 'target':: expected '%#v', got '%#v'", expected, target)
 	}
 }
+
+func TestScalarBinder_WithMap_SameType(t *testing.T) {
+	var target map[string]int
+	var input = map[string]int{
+		"one": 1,
+		"two": 2,
+	}
+
+	rv := reflect.ValueOf(&target).Elem()
+	binder := ScalarBinder(rv)
+	binder.Bind(input)
+
+	expected := input
+	if !reflect.DeepEqual(target, expected) {
+		t.Errorf("assert 'target':: expected '%#v', got '%#v'", expected, target)
+	}
+}
+
+func TestScalarBinder_WithMap_ValueIntToString(t *testing.T) {
+	var target map[string]string
+	var input = map[string]int{
+		"one": 1,
+		"two": 2,
+	}
+
+	rv := reflect.ValueOf(&target).Elem()
+	binder := ScalarBinder(rv)
+	binder.Bind(input)
+
+	expected := map[string]string{
+		"one": "1",
+		"two": "2",
+	}
+	if !reflect.DeepEqual(target, expected) {
+		t.Errorf("assert 'target':: expected '%#v', got '%#v'", expected, target)
+	}
+}
+
+func TestScalarBinder_WithMap_KeyStringToCustomStringType(t *testing.T) {
+	type strkey string
+
+	var target map[strkey]int
+	var input = map[string]int{
+		"one": 1,
+		"two": 2,
+	}
+
+	rv := reflect.ValueOf(&target).Elem()
+	binder := ScalarBinder(rv)
+	binder.Bind(input)
+
+	expected := map[strkey]int{
+		"one": 1,
+		"two": 2,
+	}
+	if !reflect.DeepEqual(target, expected) {
+		t.Errorf("assert 'target':: expected '%#v', got '%#v'", expected, target)
+	}
+}
+
+func TestScalarBinder_WithMap_ValueIntToPtrInt(t *testing.T) {
+	createIntPtr := func(v int) *int {
+		return &v
+	}
+
+	var target map[string]*int
+	var input = map[string]int{
+		"one": 1,
+		"two": 2,
+	}
+
+	rv := reflect.ValueOf(&target).Elem()
+	binder := ScalarBinder(rv)
+	binder.Bind(input)
+
+	expected := map[string]*int{
+		"one": createIntPtr(1),
+		"two": createIntPtr(2),
+	}
+	if !reflect.DeepEqual(target, expected) {
+		t.Errorf("assert 'target':: expected '%#v', got '%#v'", expected, target)
+	}
+}

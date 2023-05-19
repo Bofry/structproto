@@ -14,9 +14,9 @@ type FieldBindingError struct {
 
 func (e *FieldBindingError) Error() string {
 	if v, ok := e.Value.(string); ok && len(v) > errStringValueLength {
-		return fmt.Sprintf("cannot bind field tag '%s' with value '%s...'", e.Field, v[:errStringValueLength])
+		return fmt.Sprintf("cannot bind field tag '%s' with value '%s...'. %+v", e.Field, v[:errStringValueLength], e.Err)
 	}
-	return fmt.Sprintf("cannot bind field tag '%s' with value '%v'", e.Field, e.Value)
+	return fmt.Sprintf("cannot bind field tag '%s' with value '%v'. %+v", e.Field, e.Value, e.Err)
 }
 
 // Unwrap returns the underlying error.

@@ -3,8 +3,6 @@ package converter
 import (
 	"net/url"
 	"reflect"
-
-	reflectutil "github.com/Bofry/structproto/util/reflectutil"
 )
 
 var (
@@ -20,7 +18,7 @@ func Url(from interface{}) (url.URL, error) {
 		return convStringToUrl(T)
 	}
 
-	rv := reflect.ValueOf(reflectutil.Indirect(from))
+	rv := reflect.ValueOf(indirect(from))
 	switch rv.Kind() {
 	case reflect.String:
 		return convStringToUrl(rv.String())

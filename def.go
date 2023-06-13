@@ -43,8 +43,9 @@ type (
 	}
 
 	StructProtoResolveOption struct {
-		TagName     string
-		TagResolver TagResolver
+		TagName             string
+		TagResolver         TagResolver
+		CheckDuplicateNames bool
 	}
 
 	StructVisitor func(name string, rv reflect.Value, info FieldInfo)

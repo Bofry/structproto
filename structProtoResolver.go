@@ -10,6 +10,8 @@ import (
 type StructProtoResolver struct {
 	tagName     string
 	tagResolver TagResolver
+
+	checkDuplicateNames bool
 }
 
 func NewStructProtoResolver(option *StructProtoResolveOption) *StructProtoResolver {
@@ -20,6 +22,8 @@ func NewStructProtoResolver(option *StructProtoResolveOption) *StructProtoResolv
 	r := &StructProtoResolver{
 		tagName:     option.TagName,
 		tagResolver: option.TagResolver,
+
+		checkDuplicateNames: option.CheckDuplicateNames,
 	}
 
 	// use StdTagResolver if missing
@@ -92,6 +96,12 @@ func (r *StructProtoResolver) internalResolve(rv reflect.Value) (*Struct, error)
 			}
 			field.appendFlags(tag.Flags...)
 
+			if r.checkDuplicateNames {
+				_, ok := prototype.fields[tag.Name]
+				if ok {
+					return nil, fmt.Errorf("find duplicate name '%s' on field '%s'", tag.Name, fieldname)
+				}
+			}
 			prototype.fields[tag.Name] = field
 			if field.HasFlag(RequiredFlag) {
 				prototype.requiredFields.append(tag.Name)

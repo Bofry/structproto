@@ -23,7 +23,7 @@ func StdTagResolver(fieldname, token string) (*common.Tag, error) {
 		if len(flags) == 0 {
 			for ii := 0; ii < len(name); ii++ {
 				ch := name[ii]
-	
+
 				if ch == '_' || ch == '-' ||
 					(ch >= 'a' && ch <= 'z') ||
 					(ch >= 'A' && ch <= 'Z') ||
@@ -31,7 +31,7 @@ func StdTagResolver(fieldname, token string) (*common.Tag, error) {
 					name = name[ii:]
 					break
 				}
-	
+
 				switch ch {
 				case '*':
 					flags = append(flags, common.RequiredFlag)

@@ -382,7 +382,7 @@ func TestStruct_Map(t *testing.T) {
 	)
 
 	s := model{
-		Name:        "luffy", // "${env_foo}-${env_bar}"
+		Name:        "luffy",
 		Age:         pointy.Int(19),
 		Alias:       []string{"lucy"},
 		DateOfBirth: time.Date(2020, 5, 5, 0, 0, 0, 0, time.UTC),
@@ -399,7 +399,7 @@ func TestStruct_Map(t *testing.T) {
 		switch rv.Kind() {
 		case reflect.String:
 			if !rv.IsZero() {
-				val := fmt.Sprintf("[%s]", rv.String()) // os.ExpandEnv(rv.String())
+				val := fmt.Sprintf("[%s]", rv.String())
 				rv.Set(reflect.ValueOf(val))
 			}
 		}

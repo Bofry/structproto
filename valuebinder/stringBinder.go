@@ -63,9 +63,8 @@ func (binder StringBinder) bindValueImpl(rv reflect.Value, v string) error {
 			}
 			rv.Set(container)
 		}
-	}
-	if rv.IsZero() {
-		return bindValue(rv, v)
+	default:
+		err = bindValue(rv, v)
 	}
 	return err
 }

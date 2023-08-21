@@ -49,4 +49,5 @@ type (
 	}
 
 	StructVisitor func(name string, rv reflect.Value, info FieldInfo)
+	StructMapper  func(field FieldInfo, rv reflect.Value) error
 )

@@ -137,6 +137,13 @@ func (s *Struct) BindChan(iterator <-chan FieldValueEntity, buildValueBinder Val
 	return nil
 }
 
+func (s *Struct) Map(mapper StructMapper) error {
+	binder := &FunctionStructBinder{
+		mapper: mapper,
+	}
+	return s.Bind(binder)
+}
+
 func (s *Struct) Visit(visitor StructVisitor) {
 	for name, info := range s.fields {
 		elem := s.target.Field(info.index)

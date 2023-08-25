@@ -1,6 +1,7 @@
 package structproto_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"testing"
@@ -414,6 +415,60 @@ func TestStruct_Map(t *testing.T) {
 		Alias:       []string{"lucy"},
 		DateOfBirth: time.Date(2020, 5, 5, 0, 0, 0, 0, time.UTC),
 		Numbers:     []int{5, 12},
+	}
+	if !reflect.DeepEqual(expected, s) {
+		t.Errorf("assert:: expected '%+v', got '%+v'", expected, s)
+	}
+}
+
+var _ structproto.Unmarshaler = new(ExtraInfo)
+
+type ExtraInfo struct {
+	Favorite []string
+}
+
+func (info *ExtraInfo) UnmarshalStruct(v interface{}) error {
+	input, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("invalid ExtraInfo value")
+	}
+	var favorite []string
+	err := json.Unmarshal([]byte(input), &favorite)
+	info.Favorite = favorite
+	return err
+}
+
+func TestStruct_WithStructUnmarshaler(t *testing.T) {
+	type (
+		model struct {
+			Name      string    `demo:"*NAME"`
+			Age       *int      `demo:"*AGE"`
+			ExtraInfo ExtraInfo `demo:"ExtraInfo"`
+		}
+	)
+
+	s := model{}
+
+	prototype, err := structproto.Prototypify(&s, &structproto.StructProtoResolveOption{
+		TagName: "demo",
+	})
+	err = prototype.BindMap(map[string]interface{}{
+		"NAME":      "luffy",
+		"AGE":       "19",
+		"ExtraInfo": `[ "meat", "king" ]`,
+	}, valuebinder.BuildStringBinder)
+	if err != nil {
+		t.Error(err)
+	}
+
+	expected := model{
+		Name: "luffy",
+		Age:  pointy.Int(19),
+		ExtraInfo: ExtraInfo{
+			Favorite: []string{
+				"meat", "king",
+			},
+		},
 	}
 	if !reflect.DeepEqual(expected, s) {
 		t.Errorf("assert:: expected '%+v', got '%+v'", expected, s)

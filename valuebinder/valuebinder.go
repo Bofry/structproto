@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/Bofry/structproto/common"
 	"github.com/Bofry/structproto/valuebinder/converter"
 	"github.com/cstockton/go-conv"
 )
@@ -23,6 +24,16 @@ var (
 )
 
 func bindKnownType(rv reflect.Value, v interface{}) (bool, error) {
+	if reflect.PointerTo(rv.Type()).Implements(typeOfUnmarshaler) {
+		u := reflect.New(rv.Type())
+		err := bindUnmarshaler(u, v)
+		if err != nil {
+			return true, err
+		}
+		rv.Set(reflect.Indirect(u))
+		return true, nil
+	}
+
 	if binder, ok := knownTypeBinderTable[rv.Type()]; ok {
 		return true, binder(rv, v)
 	}
@@ -128,4 +139,13 @@ func bindBuffer(rv reflect.Value, v interface{}) error {
 	}
 	rv.Set(reflect.ValueOf(buf))
 	return nil
+}
+
+func bindUnmarshaler(rv reflect.Value, v interface{}) error {
+	rvUnmarshaler := rv.Convert(typeOfUnmarshaler)
+	unmarshaler, ok := rvUnmarshaler.Interface().(common.Unmarshaler)
+	if !ok {
+		panic(fmt.Errorf("cannot convert %s to StructUnmarshaler", rv.Type().String()))
+	}
+	return unmarshaler.UnmarshalStruct(v)
 }

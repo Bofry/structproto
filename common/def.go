@@ -14,6 +14,10 @@ type (
 		Desc  string
 	}
 
+	Unmarshaler interface {
+		UnmarshalStruct(v interface{}) error
+	}
+
 	ValueBinder interface {
 		Bind(v interface{}) error
 	}

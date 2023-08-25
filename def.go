@@ -12,6 +12,7 @@ const (
 )
 
 type (
+	Unmarshaler       = common.Unmarshaler
 	ValueBindProvider = common.ValueBindProvider
 	ValueBinder       = common.ValueBinder
 	TagResolver       = common.TagResolver

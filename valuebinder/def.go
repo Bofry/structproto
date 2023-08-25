@@ -20,13 +20,14 @@ var (
 	typeOfString = reflect.TypeOf("")
 	typeOfBytes  = reflect.TypeOf([]byte(nil))
 
-	typeOfDuration   = reflect.TypeOf(time.Nanosecond)
-	typeOfUrl        = reflect.TypeOf(url.URL{})
-	typeOfTime       = reflect.TypeOf(time.Time{})
-	typeOfRawContent = reflect.TypeOf(types.RawContent(nil))
-	typeOfRawMessage = reflect.TypeOf(json.RawMessage(nil))
-	typeOfIP         = reflect.TypeOf(net.IP(nil))
-	typeOfBuffer     = reflect.TypeOf(bytes.Buffer{})
+	typeOfUnmarshaler = reflect.TypeOf((*common.Unmarshaler)(nil)).Elem()
+	typeOfDuration    = reflect.TypeOf(time.Nanosecond)
+	typeOfUrl         = reflect.TypeOf(url.URL{})
+	typeOfTime        = reflect.TypeOf(time.Time{})
+	typeOfRawContent  = reflect.TypeOf(types.RawContent(nil))
+	typeOfRawMessage  = reflect.TypeOf(json.RawMessage(nil))
+	typeOfIP          = reflect.TypeOf(net.IP(nil))
+	typeOfBuffer      = reflect.TypeOf(bytes.Buffer{})
 )
 
 type (

@@ -432,10 +432,7 @@ func (info *ExtraInfo) UnmarshalStruct(v interface{}) error {
 	if !ok {
 		return fmt.Errorf("invalid ExtraInfo value")
 	}
-	var favorite []string
-	err := json.Unmarshal([]byte(input), &favorite)
-	info.Favorite = favorite
-	return err
+	return json.Unmarshal([]byte(input), &info.Favorite)
 }
 
 func TestStruct_WithStructUnmarshaler(t *testing.T) {

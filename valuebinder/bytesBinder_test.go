@@ -6,6 +6,18 @@ import (
 	"time"
 )
 
+func TestBytesBinder_WithBytes(t *testing.T) {
+	var v []byte
+	var input = []byte("true")
+
+	rv := reflect.ValueOf(&v).Elem()
+	binder := BytesBinder(rv)
+	binder.Bind(input)
+	if !reflect.DeepEqual(input, v) {
+		t.Errorf("assert 'v':: expected '%#v', got '%#v'", true, v)
+	}
+}
+
 func TestBytesBinder_WithBool(t *testing.T) {
 	var v bool = false
 	var input = []byte("true")

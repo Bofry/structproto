@@ -73,24 +73,18 @@ func (s *FieldFlagSet) find(predicate func(v string) bool) bool {
 }
 
 func (s *FieldFlagSet) has(v string) bool {
-	if s.isEmpty() {
-		return false
-	}
-
-	return -1 != s.indexOf(v)
+	return s.indexOf(v) != -1
 }
 
 func (s *FieldFlagSet) indexOf(v string) int {
-	if !s.isEmpty() {
-		set := *s
-		if len(set) > 0 {
-			i := sort.SearchStrings(set, v)
-			if i < len(set) {
-				if set[i] == v {
-					return i
-				}
-			}
-		}
+	if s.isEmpty() {
+		return -1
+	}
+
+	set := *s
+	i := sort.SearchStrings(set, v)
+	if i < len(set) && set[i] == v {
+		return i
 	}
 	return -1
 }
@@ -112,17 +106,16 @@ func (s *FieldFlagSet) len() int {
 }
 
 func (s FieldFlagSet) iterate() <-chan string {
-	if !s.isEmpty() {
-		c := make(chan string, 1)
-		go func() {
-			for _, v := range s {
-				c <- v
-			}
-			close(c)
-		}()
-		return c
+	if s.isEmpty() {
+		return nil
 	}
-	return nil
+
+	c := make(chan string, len(s))
+	for _, v := range s {
+		c <- v
+	}
+	close(c)
+	return c
 }
 
 func (s *FieldFlagSet) remove(v string) bool {

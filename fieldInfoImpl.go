@@ -49,12 +49,14 @@ func (f *FieldInfoImpl) Tag() reflect.StructTag {
 }
 
 func (f *FieldInfoImpl) appendFlags(values ...string) {
-	if len(values) > 0 {
-		for _, v := range values {
-			if len(v) == 0 {
-				continue
-			}
-			f.flags.append(v)
+	if len(values) == 0 {
+		return
+	}
+
+	for _, v := range values {
+		if len(v) == 0 {
+			continue
 		}
+		f.flags.append(v)
 	}
 }

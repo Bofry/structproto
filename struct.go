@@ -160,9 +160,14 @@ func (s *Struct) makeFieldBinder(rv reflect.Value, name string, buildValueBinder
 }
 
 func makeStruct(value reflect.Value) *Struct {
+	var expectedFields int
+	if value.Kind() == reflect.Struct {
+		expectedFields = value.Type().NumField()
+	}
+
 	prototype := Struct{
 		target: value,
-		fields: make(map[string]*FieldInfoImpl),
+		fields: make(map[string]*FieldInfoImpl, expectedFields),
 	}
 	return &prototype
 }

@@ -41,9 +41,9 @@ func NewStructProtoResolver(option *StructProtoResolveOption) *StructProtoResolv
 
 func (r *StructProtoResolver) Resolve(target interface{}) (*Struct, error) {
 	var rv reflect.Value
-	switch target.(type) {
+	switch target := target.(type) {
 	case reflect.Value:
-		rv = target.(reflect.Value)
+		rv = target
 	default:
 		rv = reflect.ValueOf(target)
 	}
